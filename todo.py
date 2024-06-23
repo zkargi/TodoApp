@@ -2,15 +2,30 @@ from flask import Flask,render_template,redirect,url_for,request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////Users/zeynepkargi/Desktop/Todo App/todo.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////Users/zeynepkargi/Desktop/Todo App/todo.db'
 db=SQLAlchemy(app)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    todos=Todo.query.all()
+    return render_template("index.html",todos=todos)
+
+
+@app.route("/complete/<string:id>")
+def completeTodo(id):
+    todo = Todo.query.filter_by(id = id).first()
+    """if todo.complete == True:
+        todo.complete = False
+    else:
+        todo.complete = True"""
+    todo.complete = not todo.complete
+ 
+    db.session.commit()
+    return redirect(url_for("index"))
+
 
 @app.route("/add",methods=["POST"])
-def TodoApp():
+def addTodo():
     title=request.form.get("title")
     newTodo=Todo(title=title,complete=False)
     db.session.add(newTodo)
