@@ -33,6 +33,12 @@ def addTodo():
 
     return redirect(url_for("index"))
 
+@app.route("/delete/<string:id>")
+def deleteTodo(id):
+    todo = Todo.query.filter_by(id = id).first()
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for("index"))
 
 class Todo(db.Model):
     id=db.Column(db.Integer,primary_key=True)
